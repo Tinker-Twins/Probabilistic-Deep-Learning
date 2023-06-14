@@ -1,0 +1,797 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{Notes\_01\_MLE\_Training\_ANNs}
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb.
+    \makeatletter
+        \newbox\Wrappedcontinuationbox
+        \newbox\Wrappedvisiblespacebox
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+        \newcommand*\Wrappedcontinuationindent {3ex }
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+        % Take advantage of the already applied Pygments mark-up to insert
+        % potential linebreaks for TeX processing.
+        %        {, <, #, %, $, ' and ": go to next line.
+        %        _, }, ^, &, >, - and ~: stay at end of broken line.
+        % Use of \textquotesingle for straight quote.
+        \newcommand*\Wrappedbreaksatspecials {%
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+        }
+        % Some characters . , ; ? ! / are not pygmentized.
+        % This macro makes them "active" and they will insert potential linebreaks
+        \newcommand*\Wrappedbreaksatpunct {%
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+            \catcode`\.\active
+            \catcode`\,\active
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active
+            \lccode`\~`\~
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \hypertarget{maximum-likelihood-estimation---how-neural-networks-learn}{%
+\section{Maximum likelihood estimation - how neural networks
+learn}\label{maximum-likelihood-estimation---how-neural-networks-learn}}
+
+    This is a review of maximum likelihood estimation (MLE), an important
+learning principle used in neural network training.
+
+    \hypertarget{introduction}{%
+\subsection{Introduction}\label{introduction}}
+
+Why are neural networks trained the way they are? For example, why do
+you use a mean squared error loss function for a regression task, but a
+sparse categorical crossentropy loss for classification? The answer lies
+in the \emph{likelihood} function, with a long history in statistics.
+Let's look at what this function is and how it leads to the loss
+functions used to train deep learning models.
+
+Note that it is assumed that the reader already has some understanding
+of probability distributions, both discrete and continous. If not, there
+are countless resources to help understand them. The
+\href{https://en.wikipedia.org/wiki/Probability_distribution}{Wikipedia
+page} works well for an intuitive introduction.
+
+    \hypertarget{probability-mass-and-probability-density-functions}{%
+\subsection{Probability mass and probability density
+functions}\label{probability-mass-and-probability-density-functions}}
+
+Every probability distribution has either a probability mass function
+(if the distribution is discrete) or a probability density function (if
+the distribution is continuous). This function roughly indicates the
+probability of a sample taking a particular value. We will denote this
+function \(P(y | \theta)\) where \(y\) is the value of the sample and
+\(\theta\) is the parameter describing the probability distribution.
+Written out mathematically, we have:
+
+\[
+P(y | \theta) = \text{Prob} (\text{sampling value $y$ from a distribution with parameter $\theta$}).
+\]
+
+When more than one sample is drawn \emph{independently} from the same
+distribution (which we usually assume), the probability mass/density
+function of the sample values \(y_1, \ldots, y_n\) is the product of the
+probability mass/density functions for each individual \(y_i\). Written
+formally:
+
+\[
+P(y_1, \ldots, y_n | \theta) = \prod_{i=1}^n P(y_i | \theta).
+\]
+
+This all sounds more complicated than it is: see the examples below for
+a more concrete illustration.
+
+    \hypertarget{the-likelihood-function}{%
+\subsection{The likelihood function}\label{the-likelihood-function}}
+
+Probability mass/density functions are usually considered functions of
+\(y_1, \ldots, y_n\), with the parameter \(\theta\) considered fixed.
+They are used when you know the parameter \(\theta\) and want to know
+the probability of a sample taking some values \(y_1, \ldots, y_n\). You
+use this function in \emph{probability}, where you know the distribution
+and want to make deductions about possible values sampled from it.
+
+The \emph{likelihood} function is the same, but with the
+\(y_1, \ldots, y_n\) considered fixed and with \(\theta\) considered the
+independent variable. You usually use this function when you know the
+sample values \(y_1, \ldots, y_n\) (because you've observed them by
+collecting data), but don't know the parameter \(\theta\). You use this
+function in \emph{statistics}, where you know the data and want to make
+inferences about the distribution they came from.
+
+This is an important point, so let's repeat it:
+\(P(y_1, \ldots, y_n | \theta)\) is called the \emph{probability
+mass/density function} when considered as a function of
+\(y_1, \ldots, y_n\) with \(\theta\) fixed. It's called the
+\emph{likelihood} when considered as a function of \(\theta\) with
+\(y_1, \ldots, y_n\) fixed. For the likelihood, the convention is using
+the letter \(L\), so that
+
+\[
+\underbrace{L(y_1, \ldots, y_n | \theta)}_{\text{ likelihood,} \\ \text{function of $\theta$}} = \underbrace{P(y_1, \ldots, y_n | \theta)}_{\text{probabiliy mass/density,} \\ \text{ function of $y_1, \ldots, y_n$}}
+\]
+
+Let's see some examples of this below.
+
+    \hypertarget{bernoulli-distribution}{%
+\paragraph{Bernoulli distribution}\label{bernoulli-distribution}}
+
+We'll start by looking at the
+\href{https://en.wikipedia.org/wiki/Bernoulli_distribution}{Bernoulli
+distribution} with parameter \(\theta\). It's the distribution of a
+random variable that takes value 1 with probability \(\theta\) and 0
+with probability \(1-\theta\). Let \(P(y | \theta)\) be the probability
+that the event returns value \(y\) given parameter \(\theta\). Then
+
+\[
+\begin{align}
+L(y | \theta) = P(y | \theta) &= \begin{cases}
+1 - \theta \quad \text{if} \, y = 0 \\
+\theta \quad \quad \, \, \, \text{if} \, y = 1 \\
+\end{cases} \\
+&= (1 - \theta)^{1 - y} \theta^y \quad y \in \{0, 1\}
+\end{align}
+\]
+
+If we assume samples are independent, we also have \[
+L(y_1, \ldots, y_n | \theta) = \prod_{i=1}^n (1 - \theta)^{1 - y_i} \theta^{y_i}.
+\]
+
+For example, the probability of observing \(0, 0, 0, 1, 0\) is
+
+\[
+L(0, 0, 0, 1, 0 | \theta) = (1 - \theta)(1 - \theta)(1 - \theta)\theta(1 - \theta) = \theta(1 - \theta)^4.
+\]
+
+Note that, in this case, we have fixed the data, and are left with a
+function just of \(\theta\). This is called the \emph{likelihood}
+function. Let's plot the likelihood as a function of \(\theta\) below.
+
+    \hypertarget{normal-gaussian-distribution}{%
+\paragraph{Normal (Gaussian)
+distribution}\label{normal-gaussian-distribution}}
+
+This idea also generalises naturally to the
+\href{https://en.wikipedia.org/wiki/Normal_distribution}{Normal
+distribution} (also called the \emph{Gaussian} distribution). This
+distribution has two parameters: a mean \(\mu\) and a standard deviation
+\(\sigma\). We hence let \(\theta = (\mu, \sigma)\). The probability
+density function (the analogue of the probability mass function for
+continuous distributions) is:
+
+\[
+L(y | \theta) = P(y | \theta) = P(y | \mu, \sigma) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp \Big( - \frac{1}{2 \sigma^2} (y - \mu)^2 \Big).
+\]
+
+For a sequence of independent observations \(y_1, \ldots, y_n\), the
+likelihood is
+
+\[
+L(y_1, \ldots, y_n | \mu, \sigma) = \prod_{i=1}^n \frac{1}{\sqrt{2 \pi \sigma^2}} \exp \Big( - \frac{1}{2 \sigma^2} (y_i - \mu)^2 \Big).
+\]
+
+The \emph{likelihood} is hence the same, but viewed as a function of
+\(\mu\) and \(\sigma\), with \(y_1, \ldots, y_n\) viewed as constants.
+For example, if the observed data is -1, 0, 1, the likelihood becomes
+
+\[
+L(-1, 0, 1 | \mu, \sigma) = (2 \pi \sigma^2)^{-3/2} \exp \Big( - \frac{1}{2 \sigma^2} (\mu-1)^2 + (\mu)^2 + (\mu+1)^2 \Big).
+\]
+
+which we can plot as a function of \(\mu\) an \(\sigma\) below.
+
+    \hypertarget{maximum-likelihood-estimation}{%
+\subsection{Maximum likelihood
+estimation}\label{maximum-likelihood-estimation}}
+
+The likelihood function is commonly used in statistical inference when
+we are trying to fit a distribution to some data. This is usually done
+as follows. Suppose we have observed data \(y_1, \ldots, y_n\), assumed
+to be from some distribution with unknown parameter \(\theta\), which we
+want to estimate. The likelihood is
+
+\[
+L(y_1, \ldots, y_n | \theta).
+\]
+
+The \emph{maximum likelihood estimate} \(\theta_{\text{MLE}}\) of the
+parameter \(\theta\) is then the value that maximises the likelihood
+\(L(y_1, \ldots, y_n | \theta)\). For the example of the Bernoulli
+distribution with observed data 0, 0, 0, 1, 0 (as in the plot above),
+this gives us \(p=\frac{1}{5}\), which is where the plot takes its
+maximum. For the normal distribution with data -1, 0, 1, this is the
+region where the plot is brightest (indicating the highest value), and
+this occurs at \(\mu=0, \sigma=\sqrt{\frac{2}{3}}\). In this way, we
+\emph{pick the values of the parameter \(\theta\) that make the data we
+have observed the most likely}. Written in mathematical notation, this
+is
+
+\[
+\theta_{\text{MLE}} = \arg \max_{\theta} L(y_1, \ldots, y_n | \theta).
+\]
+
+    \hypertarget{the-negative-log-likelihood}{%
+\subsection{The negative
+log-likelihood}\label{the-negative-log-likelihood}}
+
+Recall that, for independent observations, the likelihood becomes a
+product:
+
+\[
+L(y_1, \ldots, y_n | \theta) = \prod_{i=1}^n P(y_i | \theta).
+\]
+
+Furthermore, since the \(\log\) function increases with its argument,
+maximising the likelihood is equivalent to maximising the log-likelihood
+\(\log L(y_1, \ldots, y_n | \theta)\). This changes the product into a
+sum:
+
+\[
+\begin{align}
+\theta_{\text{MLE}} &= \arg \max_{\theta} L(y_1, \ldots, y_n | \theta) \\
+&= \arg \max_{\theta} \log L(y_1, \ldots, y_n | \theta) \\
+&= \arg \max_{\theta} \log \prod_{i=1}^n L(y_i | \theta) \\
+&= \arg \max_{\theta} \sum_{i=1}^n \log L(y_i | \theta).
+\end{align}
+\]
+
+Furthermore, convention in optimisation is that we always
+\emph{minimise} a function instead of maximising it. Hence, maximising
+the likelihood is equivalent to \emph{minimising} the \emph{negative
+log-likelihood}:
+
+\[
+\theta_{\text{MLE}} = \arg \min_{\theta} \text{NLL}(y_1, \ldots, y_n | \theta)
+\]
+
+where the \emph{negative log-likelihood} NLL is defined as
+
+\[
+\text{NLL}(y_1, \ldots, y_n | \theta) = - \sum_{i=1}^n \log L(y_i | \theta).
+\]
+
+    \hypertarget{training-neural-networks}{%
+\subsection{Training neural networks}\label{training-neural-networks}}
+
+How is all this used to train neural networks? We do this, given some
+training data, by picking the weights of the neural network that
+maximise the likelihood (or, equivalently, minimise the negative
+loglikelihood) of having observed that data. More specifically, the
+neural network is a function that maps each data point \(x_i\) to the
+parameter \(\theta\) of some distribution. This parameter indicates the
+probability (likelihood) of seeing each possible label. We then use this
+likelihood and our true labels \(y_i\) to find the best weights of the
+neural network.
+
+Let's be a bit more precise about this. Suppose we have a neural network
+\(\text{NN}\) with weights \(\mathbf{w}\). Furthemore, suppose \(x_i\)
+is some data point, e.g.~an image to be classified, or an \(x\) value
+for which we want to predict the \(y\) value. The neural network
+prediction (the feedforward value) \(\hat{y}_i\) is
+
+\[
+\hat{y}_i = \text{NN}(x_i | \mathbf{w}).
+\]
+
+We can use this to train the neural network (determine its weights
+\(\mathbf{w}\)) as follows. We assume that the neural network prediction
+\(\hat{y}_i\) forms part of a distribution that the true label is drawn
+from. Suppose we have some training data consisting of inputs and the
+associated labels. Let the data be \(x_i\) and the labels \(y_i\) for
+\(i=1, \ldots, n\), where \(n\) is the number of training samples. The
+training data is hence
+
+\[
+\text{training data} = \{(x_1, y_1), \ldots, (x_n, y_n)\}
+\]
+
+For each point \(x_i\), we have the neural network prediction
+\(\hat{y}_i = \text{NN}(x_i | \mathbf{w})\), which we assume specifies a
+distribution. We also have the true label \(y_i\). The weights of the
+trained neural network are then those that minimise the negative
+log-likelihood:
+
+\[
+\begin{align}
+\mathbf{w}^* &= \arg \min_{\mathbf{w}} \big( - \sum_{i=1}^n \log L(y_i | \hat{y}_i) \big) \\
+&= \arg \min_{\mathbf{w}} \big( - \sum_{i=1}^n \log L(y_i | \text{NN}(x_i | \mathbf{w})) \big)
+\end{align}
+\]
+
+In practice, determining the true optimum \(\mathbf{w}^*\) is not always
+possible. Instead, an approximate value is sought using stochastic
+gradient descent, usually via a \emph{backpropagation} of derivatives
+and some optimization algorithm such as \texttt{RMSprop} or
+\texttt{Adam}.
+
+Let's see some examples to make this idea more concrete.
+
+    \hypertarget{bernoulli-distribution-binary-classifiers}{%
+\paragraph{Bernoulli distribution: binary
+classifiers}\label{bernoulli-distribution-binary-classifiers}}
+
+Suppose we want a neural network NN that classifies images into either
+cats or dogs. Here, \(x_i\) is an image of either a cat or a dog, and
+\(\hat{y}_i\) is the probability that this image is either a cat (value
+0) or a dog (value 1):
+
+\[
+\hat{y}_i = \text{NN}(x_i | \mathbf{w}) = \text{Prob}(\text{image is dog}).
+\]
+
+Note that this is just a Bernoulli distribution with values 0 and 1
+corresponding to cat and dog respectively, of which we discussed the
+likelihood function above. Given training data
+\(\{(x_1, y_1), \ldots, (x_n, y_n)\}\), with \(y_i \in \{0, 1\}\), we
+have the negative log-likelihood
+
+\[
+\begin{align}
+\text{NLL}((x_1, y_1), \ldots, (x_n, y_n) | \mathbf{w}) &= - \sum_{i=1}^n \log L(y_i | \hat{y}_i) \\
+&= - \sum_{i=1}^n \log \big( (1 - \hat{y}_i)^{1 - y_i} \hat{y}_i^{y_i} \big) \\
+&= - \sum_{i=1}^n \big( (1 - y_i) \log(1 - \hat{y}_i) + y_i \log \hat{y}_i \big) \\
+&= - \sum_{i=1}^n \big( (1 - y_i) \log(1 - \text{NN}(x_i | \mathbf{w})) + y_i \log \text{NN}(x_i | \mathbf{w}) \big). \\
+\end{align}
+\]
+
+This is exactly the sparse categorical cross-entropy loss function used
+when training a classification neural network. Hence, the reason why we
+typically use categorical cross-entropy loss functions when training
+classification data is exactly because this is the negative
+log-likelihood under a Bernoulli (or, when there are more than 2
+classes, a categorical) distribution.
+
+    \hypertarget{normal-distribution-least-squares-regression}{%
+\paragraph{Normal distribution: least squares
+regression}\label{normal-distribution-least-squares-regression}}
+
+The idea works the same way in a regression task. Here, we have an
+\(x\)-value \(x_i\) and want to predict the associated \(y\)-value
+\(y_i\). We can use a neural network to do this, giving a prediction
+\(\hat{y}_i\):
+
+\[
+\hat{y}_i = \text{NN}(x_i | \mathbf{w}).
+\]
+
+For example, suppose we were doing linear regression with the following
+data.
+
+    It's not possible to put a straight line through every data point.
+Furthermore, even points with the same \(x\) value might not have the
+same \(y\) value. We can interpret this as \(y\) being linearly related
+to \(x\) with some noise. More precisely, we may assume that
+
+\[
+y_i = f(x_i) + \epsilon_i \quad \quad  \epsilon_i \sim N(0, \sigma^2)
+\]
+
+where \(f\) is some function we want to determine (the regression) and
+\(\epsilon_i\) is some Gaussian noise with mean 0 and constant variance
+\(\sigma^2\). In deep learning, we might approximate \(f(x_i)\) by a
+neural network \(\text{NN}(x_i | \mathbf{w})\) with weights
+\(\mathbf{w}\) and output \(\hat{y}_i\).
+
+\[
+\hat{y}_i = \text{NN}(x_i | \mathbf{w}) = f(x_i)
+\]
+
+Under this assumption, we have
+
+\[
+\epsilon_i = y_i - \hat{y}_i \sim N(0, \sigma^2)
+\]
+
+and hence, given training data \(\{(x_1, y_1), \ldots, (x_n, y_n)\}\),
+we have the negative log-likelihood (assuming the noise terms are
+independent):
+
+\[
+\begin{align}
+\text{NLL}((x_1, y_1), \ldots, (x_n, y_n) | \mathbf{w}) &= - \sum_{i=1}^n \log L(y_i | \hat{y}_i) \\
+&= - \sum_{i=1}^n \log \Big( \frac{1}{\sqrt{2\pi\sigma^2}} \exp \Big( - \frac{1}{2\sigma^2} (\hat{y}_i - y_i)^2 \Big) \Big) \\
+&= \frac{n}{2} \log (2\pi\sigma^2) + \frac{1}{2\sigma^2} \sum_{i=1}^n (\hat{y}_i - y_i)^2 \\
+&= \frac{n}{2} \log (2\pi\sigma^2) + \frac{1}{2\sigma^2} \sum_{i=1}^n (\text{NN}(x_i | \mathbf{w}) - y_i)^2.
+\end{align}
+\]
+
+Note that only the last term includes the weights. Hence, minimising the
+negative log-likelihood is equivalent to minimising
+
+\[
+\sum_{i=1}^n (\text{NN}(x_i | \mathbf{w}) - y_i)^2
+\]
+
+which is exactly the sum of squared errors. Hence, least squares
+regression (or training a neural network using the mean squared error)
+is equivalent to training a neural network to match the expected value
+of an output by minimising the negative log-likelihood assuming a
+Gaussian error term with constant variance.
+
+    \hypertarget{conclusion}{%
+\subsection{Conclusion}\label{conclusion}}
+
+This was a very short introduction to maximum likelihood estimation,
+which is essential for deep learning, especially of the probabilistic
+variety that we'll be doing in this course. The method of maximum
+likelihood estimation is key to training neural networks, and typically
+informs the choice of loss function. In fact, you would have probably
+trained neural networks using maximum likelihood estimation without even
+knowing it!
+
+    \hypertarget{further-reading-and-resources}{%
+\subsection{Further reading and
+resources}\label{further-reading-and-resources}}
+
+The Wikipedia pages for many statistical concepts offer excellent
+intuition. To read up on these ideas in more detail, following are
+recommended: * The Wikipedia page for Probability Distribution:
+https://en.wikipedia.org/wiki/Probability\_distribution * The Wikipedia
+page for Maximum Likelihood Estimation:
+https://en.wikipedia.org/wiki/Maximum\_likelihood\_estimation
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
